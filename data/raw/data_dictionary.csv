@@ -1,0 +1,30 @@
+column_name,description,data_type
+loan_id,Unique loan identifier,Identifier
+customer_id,Unique customer identifier,Identifier
+application_date,Loan application date,Date
+age,Borrower age in years,Numerical
+gender,Borrower gender,Categorical
+marital_status,Borrower marital status,Categorical
+education_level,Highest education level,Categorical
+employment_type,Employment category,Categorical
+employment_years,Years of employment,Numerical
+annual_income_lkr,Annual income in LKR,Numerical
+monthly_income_lkr,Monthly income in LKR,Numerical
+home_ownership,Housing ownership status,Categorical
+existing_loans,Number of existing loans,Numerical
+outstanding_debt_lkr,Outstanding debt in LKR,Numerical
+credit_score,Borrower credit score,Numerical
+credit_history_years,Years of credit history,Numerical
+previous_defaults,Previous default indicator,Binary
+delinquencies_last_2yrs,Delinquencies in previous two years,Numerical
+credit_utilization,Credit utilization ratio,Numerical
+loan_purpose,Purpose of the loan,Categorical
+loan_amount_lkr,Requested loan amount in LKR,Numerical
+loan_term_months,Loan repayment term in months,Numerical
+interest_rate_pct,Annual interest rate percentage,Numerical
+monthly_emi_lkr,Monthly installment in LKR,Numerical
+debt_to_income_ratio,Monthly debt obligations divided by income,Numerical
+has_cosigner,Whether loan has a cosigner,Categorical
+collateral_type,Type of loan collateral,Categorical
+collateral_value_lkr,Estimated collateral value in LKR,Numerical
+default_flag,"1 = Default, 0 = Non-default",Target
