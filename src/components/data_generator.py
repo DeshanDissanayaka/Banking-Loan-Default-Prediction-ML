@@ -254,14 +254,15 @@ def generate_banking_dataset(
     )
 
     collateral_type = rng.choice(
-        ["None", "Property", "Vehicle", "Fixed Deposit"],
-        size=n,
-        p=[0.40, 0.30, 0.20, 0.10]
-    )
+    ["No Collateral", "Property", "Vehicle", "Fixed Deposit"],
+    size=n,
+    p=[0.40, 0.30, 0.20, 0.10]
+)
+
 
     collateral_value = np.zeros(n)
 
-    secured_mask = collateral_type != "None"
+    secured_mask = collateral_type != "No Collateral"
 
     collateral_value[secured_mask] = (
         loan_amount[secured_mask]
