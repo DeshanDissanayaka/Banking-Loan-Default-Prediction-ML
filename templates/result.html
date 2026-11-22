@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Loan Risk Assessment | Banking Analytics</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .risk-category {
+            display: inline-block;
+            padding: 9px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        .risk-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .risk-moderate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-high {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .risk-very-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-category-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .probability-description {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .shap-note {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .factor-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .factor-name {
+            text-transform: capitalize;
+        }
+
+        .result-information {
+            margin-top: 25px;
+        }
+
+        .disclaimer {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 25px;
+            line-height: 1.6;
+        }
+
+        .navigation-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    {% set probability = prediction.default_probability * 100 %}
+
+    {% if probability < 20 %}
+        {% set risk_label = "Low Risk" %}
+        {% set risk_class = "risk-low" %}
+        {% set risk_color = "#16a34a" %}
+    {% elif probability < 50 %}
+        {% set risk_label = "Moderate Risk" %}
+        {% set risk_class = "risk-moderate" %}
+        {% set risk_color = "#d97706" %}
+    {% elif probability < 75 %}
+        {% set risk_label = "High Risk" %}
+        {% set risk_class = "risk-high" %}
+        {% set risk_color = "#ea580c" %}
+    {% else %}
+        {% set risk_label = "Very High Risk" %}
+        {% set risk_class = "risk-very-high" %}
+        {% set risk_color = "#dc2626" %}
+    {% endif %}
+
+    <header class="header">
+
+        <div class="brand">BANKING ANALYTICS</div>
+
+        <h1>Loan Risk Assessment</h1>
+
+        <p>Machine Learning Based Credit Risk Prediction</p>
+
+    </header>
+
+
+    <section class="result-card">
+
+        <!-- PREDICTION SUMMARY -->
+
+        <h2>Prediction Summary</h2>
+
+        <div class="prediction-status
+            {% if prediction.result == 'Default' %}
+                default-status
+            {% else %}
+                non-default-status
+            {% endif %}">
+
+            <span class="status-label">Predicted Outcome</span>
+
+            <h1>{{ prediction.result }}</h1>
+
+        </div>
+
+
+        <!-- DEFAULT PROBABILITY -->
+
+        <div class="probability-section">
+
+            <h3>Estimated Default Probability</h3>
+
+            <div class="probability-value">
+                {{ "%.2f"|format(probability) }}%
+            </div>
+
+            <div class="probability-bar">
+
+                <div class="probability-fill"
+                     style="width: {{ probability }}%;
+                            background: {{ risk_color }};">
+                </div>
+
+            </div>
+
+            <p class="probability-description">
+                Model-estimated probability of loan default.
+            </p>
+
+        </div>
+
+
+        <!-- RISK CATEGORY -->
+
+        <div class="risk-category-section">
+
+            <h3>Risk Classification</h3>
+
+            <span class="risk-category {{ risk_class }}">
+                {{ risk_label }}
+            </span>
+
+            <p class="probability-description">
+                Experimental project classification based on
+                estimated default probability.
+            </p>
+
+        </div>
+
+
+        <!-- SHAP EXPLANATIONS -->
+
+        <div class="explanation-section">
+
+            <h2>Why This Prediction?</h2>
+
+            <p class="explanation-description">
+                The following factors show how individual
+                features influenced the model's prediction.
+            </p>
+
+
+            <!-- RISK FACTORS -->
+
+            <div class="factor-card risk-factor-card">
+
+                <h3>Factors Increasing Default Risk</h3>
+
+                {% if prediction.risk_factors %}
+
+                    {% for factor in prediction.risk_factors %}
+
+                    <div class="factor-row">
+
+                        <span class="factor-name">
+                            {{ factor.feature
+                                | replace("_", " ")
+                                | title }}
+                        </span>
+
+                        <span class="factor-score risk-score">
+                            +{{ "%.4f"|format(factor.contribution) }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p>No positive contributions found.</p>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- PROTECTIVE FACTORS -->
+
+            <div class="factor-card protective-factor-card">
+
+                <h3>Factors Reducing Default Risk</h3>
+
+                {% if prediction.protective_factors %}
+
+                    {% for factor in prediction.protective_factors %}
+
+                    <div class="factor-row">
+
+                        <span class="factor-name">
+                            {{ factor.feature
+                                | replace("_", " ")
+                                | title }}
+                        </span>
+
+                        <span class="factor-score protective-score">
+                            {{ "%.4f"|format(factor.contribution) }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p>No negative contributions found.</p>
+
+                {% endif %}
+
+            </div>
+
+            <p class="shap-note">
+                Explanation method: SHAP (SHapley Additive
+                exPlanations). Contributions are measured in
+                the model's output scale (log-odds), not
+                percentage-point changes in default probability.
+            </p>
+
+        </div>
+
+
+        <!-- ASSESSMENT INFORMATION -->
+
+        <div class="result-information">
+
+            <h3>Assessment Information</h3>
+
+            <p>
+                Prediction Type:
+                <strong>Loan Default Classification</strong>
+            </p>
+
+            <p>
+                Model:
+                <strong>Logistic Regression</strong>
+            </p>
+
+            <p>
+                Explanation Method:
+                <strong>SHAP</strong>
+            </p>
+
+            <p>
+                Model Output:
+                <strong>{{ prediction.result }}</strong>
+            </p>
+
+            <p>
+                Default Probability:
+                <strong>{{ "%.2f"|format(probability) }}%</strong>
+            </p>
+
+            <p>
+                Risk Classification:
+                <strong>{{ risk_label }}</strong>
+            </p>
+
+        </div>
+
+
+        <!-- DISCLAIMER -->
+
+        <div class="disclaimer">
+
+            <p>
+                <strong>Important Notice</strong>
+            </p>
+
+            <p>
+                These explanations represent model contributions,
+                not proven causes of default. Risk categories use
+                illustrative thresholds for this experimental
+                project and are not actual bank lending policies.
+                Model predictions should not be used as the sole
+                basis for an actual lending decision.
+            </p>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="navigation-links">
+
+            <a href="/" class="back-button">
+                New Loan Application
+            </a>
+
+            <a href="/history" class="back-button">
+                Prediction History
+            </a>
+
+            <a href="/dashboard" class="back-button">
+                Analytics Dashboard
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+        Banking Loan Default Prediction | Machine Learning Project
+    </footer>
+
+</div>
+
+</body>
+</html>

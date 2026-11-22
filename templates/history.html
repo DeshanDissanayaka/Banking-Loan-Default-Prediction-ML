@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Loan Prediction History</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="header">
+            <div class="brand">BANKING ANALYTICS</div>
+            <h1>Prediction History</h1>
+            <p>Previously submitted loan applications</p>
+        </header>
+
+        <section class="result-card">
+
+            <h2>Loan Prediction Records</h2>
+
+            <p>Total Records: <strong>{{ records|length }}</strong></p>
+
+            {% if records %}
+
+            <div style="overflow-x: auto;">
+
+                <table style="width: 100%; border-collapse: collapse;">
+
+                    <thead>
+                        <tr>
+                            <th style="padding: 12px;">ID</th>
+                            <th style="padding: 12px;">Application Date</th>
+                            <th style="padding: 12px;">Prediction</th>
+                            <th style="padding: 12px;">Default Probability</th>
+                            <th style="padding: 12px;">Created At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for record in records %}
+
+                        <tr>
+                            <td style="padding: 12px;">{{ record.id }}</td>
+
+                            <td style="padding: 12px;">
+                                {{ record.application_date }}
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ record.prediction }}
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ "%.2f"|format(
+                                    record.default_probability * 100
+                                ) }}%
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ record.created_at }}
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+                <p>No prediction records available.</p>
+
+            {% endif %}
+
+            <br>
+
+            <a href="/" class="back-button">
+                New Loan Application
+            </a>
+
+        </section>
+
+    </div>
+
+</body>
+</html>
